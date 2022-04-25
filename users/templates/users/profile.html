@@ -1,0 +1,139 @@
+{% extends "feed/layout.html" %} {% load crispy_forms_tags %} {% load static %}
+{% block cssfiles %} {% endblock cssfiles %} 
+
+<!-- Extending the navigation bar to display the search function -->
+{% block searchform %}
+    <form action="{% url 'search_users' %}" method="get" class="form-inline my-2 my-lg-0 ml-5">
+        <input type="text" name="q" placeholder="Search friends..">
+        <button class="btn btn-success my-2 my-sm-0 ml-4" type="submit">
+            Search
+        </button>
+    </form>
+{% endblock searchform %}
+
+<!-- The main user display portion where we can instantiate cards to load  -->
+{% block content %}
+    <div class="main-content">
+        <div class="container mt-7">
+            <div class="row">
+                <div class="col-xl-8 m-auto order-xl-2 mb-5 mb-xl-8">
+                    <div class="card card-profile shadow">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-3 order-lg-2">
+                                <div class="card-profile-image">
+                                    <a href="{{ u.profile.image.url }}">
+                                        <img src="{{u.profile.image.url}}" alt="profile-image" class="rounded-circle" width="160px" height="160px">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Friends -->
+                    <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4"></div>
+                    <div class="card-body pt-0 pt-md-4">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-profile-stats d-flex justify-content-center mt-md-5">
+                                    <span class="heading">{{ u.profile.friends.count }}</span>
+                                    {% if request.user == u %}
+                                        <span class="description"><a href="{% url 'friend_list' %}"></a></span>
+                                    {% else %}
+                                        <span class="description">Friends</span>
+                                    {% endif %}
+                                    <span class="heading">{{ post_count }}</span>
+                                    <span class="description">
+                                        <a href="{% url 'user-posts' u.username %}">Posts</a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User bio & User profile card -->
+                    <div class="text-center">
+                        <h3>{{ u }}</h3>
+                        <p>{{ u.profile.bio }}</p>
+                        <hr class="my-2">
+                        {% if request.user == u %}
+                            <a href="{% url 'edit_profile' %}" class="btn btn-info">Edit Profile</a>
+                        {% else %}
+                            {% if button_status == 'not_friend' %}
+                                <small><a href="/users/friend-request/send/{{u.id}}" class="btn btn-primary">Add Friend</a></small>
+                            {% elif button_status == 'friend_request_sent' %}
+                                <small><a href="/users/friend-request/cancel/{{u.id}}" class="btn btn-warning">Cancel Request</a></small>
+                            {% elif button_status == 'friend_request_received' %}
+                                <small><a href="/users/friend-request/accept/{{u.id}}" class="btn btn-success mr-2">Accept Request</a></small>
+                                <small><a href="/users/friend-request/reject/{{u.id}}" class="btn btn-danger">Reject Request</a></small>
+                            {% else %}
+                                <small><a href="/users/friend/delete/{{u.id}}" class="btn btn-danger">UnFriend</a></small>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <!--  -->
+            <br>
+            {% if request.user == u %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card card-signin my-5">
+                            <div class="card-body">
+                                <h2>Friend Requests Sent ({{sent_friend_requests.count}})</h2>
+                                <hr class="my-2">
+                                {% if not sent_friend_requests %}
+                                    <h5><i>No sent requests!</i></h5>
+                                {% else %}
+                                    {% for s_request in sent_friend_requests %}
+                                        <a href="{{ s_request.to_user.profile.get_absolute_url }}">
+                                            <img src="{{ s_request.to_user.profile.image.url }}" alt="friend-profile-image" class="rounded mr-2" width="40" height="40" >
+                                        </a>
+                                        <a href="{{ s_request.profile.get_absolute_url }}">
+                                            <b>{{ s_request.to_user.username }}</b>
+                                        </a>
+                                        <small class="float-right">
+                                            <a href="{% url 'cancel_friend_request' s_request.to_user.id %}" class="btn btn-warning mr-2">Cancel</a>
+                                        </small>
+                                        <br>
+                                        <br>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  -->
+                    <div class="col-md-6">
+                        <div class="card card-signin my-5">
+                            <div class="card-body">
+                                <h2>Friend Requests Received ({{ receive_friend_requests.count }}) </h2>
+                                <hr class="my-2">
+                                {% if not receive_friend_requests %}
+                                    <h5><i>No Received requests!</i></h5>
+                                {% else %}
+                                    {% for r_request in receive_friend_requests %}
+                                        <a href="{{ r_request.from_user.profile.get_absolute_url }}">
+                                            <img src="{{ r_request.from_user.profile.image.url }}" alt="friend-profile-image" class="rounded mr-2" width="40" height="40" >
+                                        </a>
+                                        <a href="{{ r_request.profile.get_absolute_url }}" class="mr-2 align-middle">
+                                            <b>{{ r_request.from_user.username }}</b>
+                                        </a>
+                                        <small class="float-right">
+                                            <a href="{% url 'accept_friend_request' r_request.from_user.id %}" class="btn btn-success mr-2">Accept</a>
+                                            <a href="{% url 'reject_friend_request' r_request.from_user.id %}" class="btn btn-danger">Reject</a>
+                                        </small>
+                                        <br>
+                                        <br>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>                    
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %} 
+{% block jsfiles %}{% endblock jsfiles %}

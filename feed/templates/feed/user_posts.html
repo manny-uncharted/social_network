@@ -1,0 +1,12 @@
+{% extends "feed/layout.html" %}
+{% load static %}
+{% block cssfiles %}
+{% endblock cssfiles %}
+
+<!-- Search  -->
+{% block searchform %}
+    <form class="form-inline my-2 my-lg-0 ml-5" action="{% url 'search_posts' %}" method="get">
+        <input name="p" type="text" placeholder="Search posts..">
+        <button class="btn btn-success my-2 my-sm-0 ml-4" type="submit">Search</button>
+    </form>
+{% endblock searchform %}

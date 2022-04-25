@@ -1,0 +1,38 @@
+{% extends "feed/layout.html" %}
+{% load static %}
+{% block cssfiles %} {% endblock cssfiles %}
+
+<!-- Search Form -->
+{% block searchform %}
+    <form action="{% url 'search_users' %}" class="form-inline my-2 my-lg-0 ml-5" method="get">
+        <input name="q" type="text" placeholder="Search users.." >
+        <button class="btn btn-success my-2 my-sm-0 ml-4" type="submit">Search</button>
+    </form>
+{% endblock searchform %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 col-md-8 col-lg-7 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center"><b>Update Profile</b></h5>
+                        <form method="POST" enctype="multipart/form-data" class="form-signin">
+                            {% csrf_token %}
+                            <fieldset class="form-group">
+                                <br>
+                                {{ u_form|crispy }} {{p_form|crispy}}
+                            </fieldset>
+                            <div class="form-group">
+                                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Update</button>
+                                <br>
+                                <a href="{% url 'my_profile' %}" class="btn btn-lg btn-warning btn-block text-uppercase">Go Back</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
