@@ -1,4 +1,4 @@
-{% extends "feeds/layout.html" %}
+{% extends "feed/layout.html" %}
 {% load static %}
 {% block cssfiles %}
 {% endblock cssfiles %}
@@ -21,7 +21,7 @@
                         <div class="card-body">
                             {% for user_p in users %}
                                 <a href="{{ user_p.profile.get_absolute_url }}">
-                                    <img src="{{ user_p.profile.image.url }}" alt="user-image" class="rounded mr-2" width="40" height="40">
+                                    <img src="{{ user_p.profile.image.url }}" alt="user-image" class="rounded mr-2" width="50" height="50">
                                 </a>
                                 <a href="{{ user_p.profile.get_absolute_url }}" class="text-dark"><b>{{ user_p }}</b></a>
                                 {% if not user_p.user in sent %}
